@@ -2,31 +2,31 @@ import pygame
 from src.settings import *
 
 class Text:
-    def __init__(self, x, y, text, size):
-        self.x = x
-        self.y = y
+    def __init__(self, x, y, text, text_size):
+        pygame.font.init()
+        self.x, self.y = x, y
         self.text = text
-        self.size = size
+        self.text_size = text_size
     
     def draw(self, screen):
-        font = pygame.font.SysFont("Arial", self.size)
+        font = pygame.font.SysFont("Arial", self.text_size)
         text = font.render(self.text, True, WHITE)
         screen.blit(text, (self.x, self.y))
 
 class Button:
-    def __init__(self, x, y, width, height, text, color, text_color, radius = 0):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    def __init__(self, x, y, width, height, text, text_size, background_color, text_color, radius = 0):
+        pygame.font.init()
+        self.x, self.y = x, y
+        self.width, self.height = width, height
         self.text = text
-        self.color = color
+        self.text_size = text_size
+        self.background_color = background_color
         self.text_color = text_color
         self.radius = radius
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height), border_radius=self.radius)
-        self.font = pygame.font.SysFont("Arial", 25)
+        pygame.draw.rect(screen, self.background_color, (self.x, self.y, self.width, self.height), border_radius = self.radius)
+        self.font = pygame.font.SysFont("Arial", self.text_size)
         text = self.font.render(self.text, True, self.text_color)
         self.font_size = self.font.size(self.text)
         draw_x = self.x + (self.width - self.font_size[0]) // 2

@@ -4,9 +4,7 @@ import time
 
 from src.settings import *
 from src.tile import *
-from src.uielement import *
-
-
+from src.elements import *
 
 class Game:
     def __init__(self):
@@ -20,15 +18,15 @@ class Game:
         self.start_game = False
         self.start_timer = False
         self.elapsed_time = 0
-        self.high_score = float(self.get_high_score()[0])
+        self.high_score = self.get_high_score()
         self.image = "images/dog.jpg"
 
     def get_high_score(self):
         try:
             with open("score/score.txt", "r") as file:
-                return file.read().splitlines()
+                return float(file.read().splitlines()[0])
         except:
-            return [0]
+            return [0.000]
 
     def save_score(self):
         with open("score/score.txt", "w") as file:
@@ -96,15 +94,17 @@ class Game:
         self.start_timer = False
         self.start_game = False
         self.draw_tiles()
-        self.button_list = []
-        self.button_list.append(Button(412, 600, 200, 50, "Shuffle", WHITE, BLACK, 25))
-        self.button_list.append(Button(412, 680, 200, 50, "Reset", WHITE, BLACK, 25))
 
-        self.button_list.append(Button(380, 510, 50, 50, "1", WHITE, BLACK))
-        self.button_list.append(Button(480, 510, 50, 50, "2", WHITE, BLACK))
-        self.button_list.append(Button(580, 510, 50, 50, "3", WHITE, BLACK))
+        self.button_list = []
+        self.button_list.append(Button(412, 600, 200, 50, "Shuffle", 25, WHITE, BLACK, 25))
+        self.button_list.append(Button(412, 680, 200, 50, "Reset", 25, WHITE, BLACK, 25))
+
+        self.button_list.append(Button(380, 510, 50, 50, "1", 25, WHITE, BLACK))
+        self.button_list.append(Button(480, 510, 50, 50, "2", 25, WHITE, BLACK))
+        self.button_list.append(Button(580, 510, 50, 50, "3", 25, WHITE, BLACK))
 
     def run(self): 
+
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
@@ -145,10 +145,10 @@ class Game:
 
     def draw_grid(self):
         for row in range(-1, GAMESIZE * TILESIZE, TILESIZE):
-            pygame.draw.line(self.screen, LIGHTGRAY, (START[0] + row, START[1] - SLIDE), (START[0] + row, GAMESIZE * TILESIZE + START[1] - SLIDE))
+            pygame.draw.line(self.screen, LIGHTGRAY, (START[0] + row, START[1]), (START[0] + row, GAMESIZE * TILESIZE + START[1]))
         
         for column in range(-1, GAMESIZE * TILESIZE, TILESIZE):
-            pygame.draw.line(self.screen, LIGHTGRAY, (START[0], START[1] - SLIDE + column), (GAMESIZE * TILESIZE + START[0], START[1] - SLIDE + column))
+            pygame.draw.line(self.screen, LIGHTGRAY, (START[0], START[1] + column), (GAMESIZE * TILESIZE + START[0], START[1] + column))
 
     def draw(self):
         self.screen.fill(BGCOLOUR)
@@ -207,4 +207,3 @@ class Game:
                         if button.text == "3":
                             self.image = "images/cub.jpg"
                             self.new()
-
