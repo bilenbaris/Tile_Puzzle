@@ -169,7 +169,7 @@ class Game:
                 mouse_pos = pygame.mouse.get_pos()
                 for row, tiles in enumerate(self.tiles):
                     for col, tile in enumerate(tiles):
-                        if tile.click(mouse_pos):
+                        if tile.click(mouse_pos) and not self.start_shuffle:
 
                             if tile.right() and self.tiles_grid[row][col + 1] == 0:
                                 self.tiles_grid[row][col], self.tiles_grid[row][col + 1] = self.tiles_grid[row][col + 1], self.tiles_grid[row][col]
