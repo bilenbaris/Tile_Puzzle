@@ -7,6 +7,7 @@ from src.tile import *
 from src.elements import *
 
 class Game:
+    
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -18,10 +19,14 @@ class Game:
         self.start_game = False
         self.start_timer = False
         self.elapsed_time = 0
-        self.high_score = self.get_high_score()
+        self.high_score = self.get_score()
         self.image = "images/dog.jpg"
 
-    def get_high_score(self):
+    def get_score(self):
+        """
+            Gets the high score from the score.txt file.
+            return: float
+        """
         try:
             with open("score/score.txt", "r") as file:
                 return float(file.read().splitlines()[0])
@@ -29,15 +34,90 @@ class Game:
             return [0.000]
 
     def save_score(self):
+        """
+            Saves the high score to the score.txt file.
+        """
         with open("score/score.txt", "w") as file:
             file.write(str("%.3f\n" % self.high_score))
 
     def create_game(self):
+        """
+            Creates the game matrix.
+
+        """
         grid = [[x + y * GAMESIZE for x in range(1, GAMESIZE + 1)] for y in range(GAMESIZE)]
         grid[-1][-1] = 0
         return grid
 
+    def draw_tiles(self):
+        """
+            Draws the tiles.
+        """
+        self.tiles = []
+        for row, x in enumerate(self.tiles_grid):
+            self.tiles.append([])
+            for col, y in enumerate(x):
+                if y != 0:
+                    self.tiles[row].append(Tile(self, col, row, str(y - 1), self.image))
+                else:
+                    self.tiles[row].append(Tile(self, col, row, "empty", self.image))
+
+    def draw_grid(self):
+        """
+            Draws the game grid.
+        """
+        for row in range(-1, GAMESIZE * TILESIZE, TILESIZE):
+            pygame.draw.line(self.screen, LIGHTGRAY, (START[0] + row, START[1]), (START[0] + row, GAMESIZE * TILESIZE + START[1]))
+        
+        for column in range(-1, GAMESIZE * TILESIZE, TILESIZE):
+            pygame.draw.line(self.screen, LIGHTGRAY, (START[0], START[1] + column), (GAMESIZE * TILESIZE + START[0], START[1] + column))
+
+    def draw_element(self):
+        """
+            Draws the ui elements.
+        """
+        for button in self.button_list:
+            button.draw(self.screen)
+
+        Text(825, 120, "Time", 30).draw(self.screen)
+        Text(825, 160, "%.3f" % self.elapsed_time, 30).draw(self.screen)
+        Text(100, 120, "High Score", 30).draw(self.screen)
+        Text(130, 160, "%.3f" % (self.high_score if self.high_score > 0 else 0), 30).draw(self.screen)
+
+    def draw(self):
+        """
+            Game loop - draw.
+        """
+        self.screen.fill(BGCOLOUR)
+        self.all_sprites.draw(self.screen)
+        self.draw_grid()
+        self.draw_element()
+        pygame.display.flip()
+
+    def new(self):
+        """
+            Starts a new game.
+        """
+        self.all_sprites = pygame.sprite.Group()
+        self.tiles_grid = self.create_game()
+        self.tiles_grid_completed = self.create_game()
+        self.elapsed_time = 0
+        self.start_timer = False
+        self.start_game = False
+        self.draw_tiles()
+
+        self.button_list = []
+        self.button_list.append(Button(412, 600, 200, 50, "Shuffle", 25, WHITE, BLACK, 25))
+        self.button_list.append(Button(412, 680, 200, 50, "Reset", 25, WHITE, BLACK, 25))
+
+        self.button_list.append(Button(380, 510, 50, 50, "1", 25, WHITE, BLACK))
+        self.button_list.append(Button(480, 510, 50, 50, "2", 25, WHITE, BLACK))
+        self.button_list.append(Button(580, 510, 50, 50, "3", 25, WHITE, BLACK))
+
     def shuffle(self):
+        """
+            Shuffles the game matrix.
+        """
         self.elapsed_time = 0
         possible_moves = []
         for row, tiles in enumerate(self.tiles):
@@ -76,94 +156,10 @@ class Game:
         elif choice == "down":
             self.tiles_grid[row][col], self.tiles_grid[row + 1][col] = self.tiles_grid[row + 1][col], self.tiles_grid[row][col]
 
-    def draw_tiles(self):
-        self.tiles = []
-        for row, x in enumerate(self.tiles_grid):
-            self.tiles.append([])
-            for col, y in enumerate(x):
-                if y != 0:
-                    self.tiles[row].append(Tile(self, col, row, str(y - 1), self.image))
-                else:
-                    self.tiles[row].append(Tile(self, col, row, "empty", self.image))
-
-    def new(self):
-        self.all_sprites = pygame.sprite.Group()
-        self.tiles_grid = self.create_game()
-        self.tiles_grid_completed = self.create_game()
-        self.elapsed_time = 0
-        self.start_timer = False
-        self.start_game = False
-        self.draw_tiles()
-
-        self.button_list = []
-        self.button_list.append(Button(412, 600, 200, 50, "Shuffle", 25, WHITE, BLACK, 25))
-        self.button_list.append(Button(412, 680, 200, 50, "Reset", 25, WHITE, BLACK, 25))
-
-        self.button_list.append(Button(380, 510, 50, 50, "1", 25, WHITE, BLACK))
-        self.button_list.append(Button(480, 510, 50, 50, "2", 25, WHITE, BLACK))
-        self.button_list.append(Button(580, 510, 50, 50, "3", 25, WHITE, BLACK))
-
-    def run(self): 
-        self.playing = True
-        while self.playing:
-            self.clock.tick(FPS)
-            self.events()
-            self.update()
-            self.draw()
-
-    def update(self):
-        if self.start_game:
-            if self.tiles_grid == self.tiles_grid_completed:
-                self.start_game = False
-                if self.high_score > 0:
-                    if self.elapsed_time < self.high_score:
-                        self.high_score = self.elapsed_time
-                    else:
-                        self.high_score = self.high_score
-                else:
-                    self.high_score = self.elapsed_time
-                self.save_score()
-
-            if self.start_timer:
-                self.timer = time.time()
-                self.start_timer = False
-            
-            self.elapsed_time = time.time() - self.timer
-
-        if self.start_shuffle:
-            self.shuffle()
-            self.draw_tiles()
-            self.shuffle_time += 1
-            if self.shuffle_time > 100:
-                self.start_shuffle = False
-                self.start_game = True
-                self.start_timer = True
-
-        self.all_sprites.update()
-
-    def draw_grid(self):
-        for row in range(-1, GAMESIZE * TILESIZE, TILESIZE):
-            pygame.draw.line(self.screen, LIGHTGRAY, (START[0] + row, START[1]), (START[0] + row, GAMESIZE * TILESIZE + START[1]))
-        
-        for column in range(-1, GAMESIZE * TILESIZE, TILESIZE):
-            pygame.draw.line(self.screen, LIGHTGRAY, (START[0], START[1] + column), (GAMESIZE * TILESIZE + START[0], START[1] + column))
-
-    def draw(self):
-        self.screen.fill(BGCOLOUR)
-        self.all_sprites.draw(self.screen)
-        self.draw_grid()
-
-        for button in self.button_list:
-            button.draw(self.screen)
-
-        Text(825, 120, "Time", 30).draw(self.screen)
-        Text(825, 160, "%.3f" % self.elapsed_time, 30).draw(self.screen)
-        Text(100, 120, "High Score", 30).draw(self.screen)
-        Text(130, 160, "%.3f" % (self.high_score if self.high_score > 0 else 0), 30).draw(self.screen)
-
-        pygame.display.flip()
-
     def events(self):
+        """
+            Game loop - events.
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -205,3 +201,47 @@ class Game:
                         if button.text == "3":
                             self.image = "images/cub.jpg"
                             self.new()
+
+    def update(self):
+        """
+            Game loop - update.
+        """
+        if self.start_game:
+            if self.tiles_grid == self.tiles_grid_completed:
+                self.start_game = False
+                if self.high_score > 0:
+                    if self.elapsed_time < self.high_score:
+                        self.high_score = self.elapsed_time
+                    else:
+                        self.high_score = self.high_score
+                else:
+                    self.high_score = self.elapsed_time
+                self.save_score()
+
+            if self.start_timer:
+                self.timer = time.time()
+                self.start_timer = False
+            
+            self.elapsed_time = time.time() - self.timer
+
+        if self.start_shuffle:
+            self.shuffle()
+            self.draw_tiles()
+            self.shuffle_time += 1
+            if self.shuffle_time > 100:
+                self.start_shuffle = False
+                self.start_game = True
+                self.start_timer = True
+
+        self.all_sprites.update()
+
+    def run(self):
+        """
+            Game loop.
+        """ 
+        self.playing = True
+        while self.playing:
+            self.clock.tick(FPS)
+            self.events()
+            self.update()
+            self.draw()
