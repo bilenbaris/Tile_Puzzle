@@ -104,7 +104,6 @@ class Game:
         self.button_list.append(Button(580, 510, 50, 50, "3", 25, WHITE, BLACK))
 
     def run(self): 
-
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
@@ -113,7 +112,6 @@ class Game:
             self.draw()
 
     def update(self):
-
         if self.start_game:
             if self.tiles_grid == self.tiles_grid_completed:
                 self.start_game = False
@@ -136,7 +134,7 @@ class Game:
             self.shuffle()
             self.draw_tiles()
             self.shuffle_time += 1
-            if self.shuffle_time > 10:
+            if self.shuffle_time > 100:
                 self.start_shuffle = False
                 self.start_game = True
                 self.start_timer = True
