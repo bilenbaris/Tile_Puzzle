@@ -6,6 +6,12 @@ from src.settings import *
 from src.tile import *
 from src.elements import *
 
+from agent.agent import *
+from agent.bfs import *
+from agent.dfs import *
+from agent.astar import *
+
+
 class Game:
     
     def __init__(self):
@@ -15,6 +21,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.shuffle_time = 0
         self.start_shuffle = False
+        self.bfs=False
+        self.dfs=False
+        self.astar=False
         self.prev_choice = ""
         self.start_game = False
         self.start_timer = False
@@ -83,6 +92,7 @@ class Game:
         Text(825, 160, "%.3f" % self.elapsed_time, 30).draw(self.screen)
         Text(100, 120, "High Score", 30).draw(self.screen)
         Text(130, 160, "%.3f" % (self.high_score if self.high_score > 0 else 0), 30).draw(self.screen)
+        Text(810, 410, "Solve with", 30).draw(self.screen)
 
     def draw(self):
         """
@@ -113,6 +123,10 @@ class Game:
         self.button_list.append(Button(380, 510, 50, 50, "1", 25, WHITE, BLACK))
         self.button_list.append(Button(480, 510, 50, 50, "2", 25, WHITE, BLACK))
         self.button_list.append(Button(580, 510, 50, 50, "3", 25, WHITE, BLACK))
+
+        self.button_list.append(Button(850, 460, 50, 50, "BFS", 25, WHITE, BLACK,10))
+        self.button_list.append(Button(850, 515, 50, 50, "DFS", 25, WHITE, BLACK,10))
+        self.button_list.append(Button(850, 570, 50, 50, "A*", 25, WHITE, BLACK,10))
 
     def shuffle(self):
         """
@@ -201,6 +215,27 @@ class Game:
                         if button.text == "3":
                             self.image = "images/cub.jpg"
                             self.new()
+                        if button.text == "BFS":
+                            self.bfs = True
+                            agent = BFSAgent(self.tiles_grid)
+                            self.moves = agent.solve()
+                        if button.text == "DFS":
+                            self.dfs = True
+                            agent = DFSAgent(self.tiles_grid)
+                            self.moves = agent.solve()
+                        if button.text == "A*":
+                            self.astar = True
+                            agent = AStarAgent(self.tiles_grid)
+                            self.moves = agent.solve()
+                            print(agent.generated_node_count)
+                            print(agent.expanded_node_count)
+                            print(agent.maximum_node_in_memory_count)
+
+    def ai_solve(self):
+        if len(self.moves) > 0:
+            move = self.moves.pop(0)
+            self.tiles_grid = move
+
 
     def update(self):
         """
@@ -232,6 +267,10 @@ class Game:
                 self.start_shuffle = False
                 self.start_game = True
                 self.start_timer = True
+
+        if self.astar or self.bfs or self.dfs:
+            self.ai_solve()
+            self.draw_tiles()
 
         self.all_sprites.update()
 
