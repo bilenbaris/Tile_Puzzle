@@ -271,7 +271,7 @@ class Game:
             self.shuffle()
             self.draw_tiles()
             self.shuffle_time += 1
-            if self.shuffle_time > 20:
+            if self.shuffle_time > SHUFFLE:
                 self.start_shuffle = False
                 self.start_game = True
                 self.start_timer = True
