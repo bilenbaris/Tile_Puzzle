@@ -227,9 +227,6 @@ class Game:
                             self.astar = True
                             agent = AStarAgent(self.tiles_grid)
                             self.moves = agent.solve()
-                            print(agent.generated_node_count)
-                            print(agent.expanded_node_count)
-                            print(agent.maximum_node_in_memory_count)
 
     def ai_solve(self):
         if len(self.moves) > 0:
