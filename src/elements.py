@@ -50,5 +50,6 @@ class Button:
     def click(self, mouse_pos):
         """
             Checks if the button is clicked or not.
+            return: bool
         """
         return (self.x <= mouse_pos[0] <= self.x + self.width) and (self.y <= mouse_pos[1] <= self.y + self.height)

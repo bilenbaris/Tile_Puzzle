@@ -112,6 +112,9 @@ class Game:
         self.tiles_grid = self.create_game()
         self.tiles_grid_completed = self.create_game()
         self.elapsed_time = 0
+        self.bfs=False
+        self.dfs=False
+        self.astar=False
         self.start_timer = False
         self.start_game = False
         self.draw_tiles()
@@ -170,6 +173,17 @@ class Game:
         elif choice == "down":
             self.tiles_grid[row][col], self.tiles_grid[row + 1][col] = self.tiles_grid[row + 1][col], self.tiles_grid[row][col]
 
+    def solve(self):
+        if len(self.moves) > 0:
+            move = self.moves.pop(0)
+            self.tiles_grid = move
+
+    def print_info(self,agent):                      
+        print("Generated Node Count: " + str(agent.generated_node_count))
+        print("Expanded Node Count: " + str(agent.expanded_node_count))
+        print("Maximum Node Count: " + str(agent.maximum_node_in_memory_count))
+        print("Total Move: " + str(agent.total_move_count))
+
     def events(self):
         """
             Game loop - events.
@@ -219,20 +233,17 @@ class Game:
                             self.bfs = True
                             agent = BFSAgent(self.tiles_grid)
                             self.moves = agent.solve()
+                            self.print_info(agent)
                         if button.text == "DFS":
                             self.dfs = True
                             agent = DFSAgent(self.tiles_grid)
                             self.moves = agent.solve()
+                            self.print_info(agent)
                         if button.text == "A*":
                             self.astar = True
                             agent = AStarAgent(self.tiles_grid)
                             self.moves = agent.solve()
-
-    def ai_solve(self):
-        if len(self.moves) > 0:
-            move = self.moves.pop(0)
-            self.tiles_grid = move
-
+                            self.print_info(agent)
 
     def update(self):
         """
@@ -260,13 +271,13 @@ class Game:
             self.shuffle()
             self.draw_tiles()
             self.shuffle_time += 1
-            if self.shuffle_time > 100:
+            if self.shuffle_time > 20:
                 self.start_shuffle = False
                 self.start_game = True
                 self.start_timer = True
 
         if self.astar or self.bfs or self.dfs:
-            self.ai_solve()
+            self.solve()
             self.draw_tiles()
 
         self.all_sprites.update()

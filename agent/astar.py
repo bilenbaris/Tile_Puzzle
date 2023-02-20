@@ -47,7 +47,6 @@ class AStarAgent(Agent):
         # Direction vectors for RIGHT, LEFT, UP, DOWN
         self.directions = [[0, 1], [0, -1], [-1, 0], [1, 0]]
 
-        # g scores for A* algorithm
         self.g_scores = []
     
     def find_empty_tile(self, game_matrix):
@@ -55,15 +54,18 @@ class AStarAgent(Agent):
             Find the empty tile in the game matrix.
             return: (row, col)
         """
+        #######################################
+        ###---DO NOT CHANGE THIS FUNCTION---###
         for i in range(self.size):
             for j in range(self.size):
                 if game_matrix[i][j] == 0:
                     return i, j
+        #######################################
     
     def heuristic(self, matrix):
         """
             Calculate the heuristic value of the game matrix.
-            return: heuristic value
+            return: int
         """
         h = 0
         for i in range(self.size):
@@ -71,28 +73,16 @@ class AStarAgent(Agent):
                 if self.desired_matrix[i][j] != matrix[i][j]:
                     h += 1
         return h
-    
-    def get_f_score(self, Node):
-        return Node.f_score
+
+    def get_fhg_score(self, Node):
+        return Node.f_score, Node.h_score, Node.g_score
     
     def get_moves(self, Node):
         road = [] 
         while Node.parent != None:
             road.insert(0, Node.matrix)
-            # before_pos = Node.parent.position
-            # move = [before_pos[0] - Node.position[0], before_pos[1] - Node.position[1]]
-
-            # if move == self.directions[0]:
-            #     road.insert(0,"L")
-            # elif move == self.directions[1]:
-            #     road.insert(0,"R")
-            # elif move == self.directions[2]:
-            #     road.insert(0,"D")
-            # elif move == self.directions[3]:
-            #     road.insert(0,"U")
-
             Node = Node.parent
-        
+            self.total_move_count += 1
         return road
 
     
@@ -110,20 +100,17 @@ class AStarAgent(Agent):
 
         initial_heuristic = self.heuristic(self.game_matrix)
 
-
-
         queue = []
         visited = []
         nodes_in_queue = []
         finished = False
 
         initial_node = Node(None, position, initial_matrix, 0, initial_heuristic)
-
         queue.append(initial_node)
 
         while queue and not finished:
 
-            queue.sort(key=self.get_f_score)
+            queue.sort(key=self.get_fhg_score)
 
             current_node = queue.pop(0)
 
@@ -145,7 +132,6 @@ class AStarAgent(Agent):
                 if new_h_score == 0:
                     
                     new_g_score = self.g_scores[current_pos[0]][current_pos[1]] + 1
-                    
                     if self.g_scores[next_pos[0]][next_pos[1]] > new_g_score:
                         self.g_scores[next_pos[0]][next_pos[1]] = new_g_score
 
@@ -156,13 +142,11 @@ class AStarAgent(Agent):
                 elif new_matrix not in visited:
 
                     new_g_score = self.g_scores[current_pos[0]][current_pos[1]] + 1
-
                     if self.g_scores[next_pos[0]][next_pos[1]] > new_g_score:
                         self.g_scores[next_pos[0]][next_pos[1]] = new_g_score
                     
-
                     if new_matrix not in nodes_in_queue:
-                        new_node = Node(current_node,next_pos, new_matrix, new_g_score,new_h_score)
+                        new_node = Node(current_node,next_pos, new_matrix, new_g_score + 1,new_h_score)
                         queue.append(new_node)
                         nodes_in_queue.append(new_matrix)
                         self.generated_node_count += 1
