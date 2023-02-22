@@ -1,7 +1,7 @@
 """
-    ###########################################
-    DO NOT CHANGE ANYTHING OTHER THAN GAMESIZE.
-    ###########################################
+    #######################################################
+    DO NOT CHANGE ANYTHING OTHER THAN GAMESIZE AND SHUFFLE.
+    #######################################################
 """
 
 ###---COLORS---###
@@ -20,7 +20,7 @@ TITLE = "Tile Puzzle Game"
 BOARDSIZE = 384
 GAMESIZE = 3
 TILESIZE = BOARDSIZE // GAMESIZE
-SHUFFLE = 20
+SHUFFLE = 10
 
 ###---STARTING POSITION---###
 START = [(WIDTH - BOARDSIZE) // 2, (HEIGHT - BOARDSIZE) // 4]

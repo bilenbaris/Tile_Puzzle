@@ -7,9 +7,7 @@ from src.tile import *
 from src.elements import *
 
 from agent.agent import *
-from agent.bfs import *
-from agent.dfs import *
-from agent.astar import *
+from agent.agents import *
 
 
 class Game:
@@ -56,7 +54,7 @@ class Game:
         """
         grid = [[x + y * GAMESIZE for x in range(1, GAMESIZE + 1)] for y in range(GAMESIZE)]
         grid[-1][-1] = 0
-        return grid
+        return np.array(grid)
 
     def draw_tiles(self):
         """
@@ -179,10 +177,10 @@ class Game:
             self.tiles_grid = move
 
     def print_info(self,agent):                      
-        print("Generated Node Count: " + str(agent.generated_node_count))
-        print("Expanded Node Count: " + str(agent.expanded_node_count))
-        print("Maximum Node Count: " + str(agent.maximum_node_in_memory_count))
-        print("Total Move: " + str(agent.total_move_count))
+        print("Generated Node Count: " + str(agent.generated_node))
+        print("Expanded Node Count: " + str(agent.expanded_node))
+        print("Maximum Node Count: " + str(agent.maximum_node_in_memory))
+        print("Total Move: " + str(agent.total_move))
 
     def events(self):
         """
@@ -250,7 +248,7 @@ class Game:
             Game loop - update.
         """
         if self.start_game:
-            if self.tiles_grid == self.tiles_grid_completed:
+            if self.tiles_grid.all() == self.tiles_grid_completed.all():
                 self.start_game = False
                 if self.high_score > 0:
                     if self.elapsed_time < self.high_score:
@@ -280,6 +278,7 @@ class Game:
             self.solve()
             self.draw_tiles()
 
+        # print(self.elapsed_time)
         self.all_sprites.update()
 
     def run(self):
