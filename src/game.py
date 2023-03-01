@@ -13,15 +13,16 @@ from agent.agents import *
 class Game:
     
     def __init__(self):
+        """
+            Initializes the game object class.
+        """
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.shuffle_time = 0
         self.start_shuffle = False
-        self.bfs=False
-        self.dfs=False
-        self.astar=False
+        self.agent_activated = False
         self.prev_choice = ""
         self.start_game = False
         self.start_timer = False
@@ -32,7 +33,9 @@ class Game:
     def get_score(self):
         """
             Gets the high score from the score.txt file.
-            return: float
+            
+            Returns:
+                float: High score
         """
         try:
             with open("score/score.txt", "r") as file:
@@ -50,15 +53,14 @@ class Game:
     def create_game(self):
         """
             Creates the game matrix.
-
         """
         grid = [[x + y * GAMESIZE for x in range(1, GAMESIZE + 1)] for y in range(GAMESIZE)]
         grid[-1][-1] = 0
-        return np.array(grid)
+        return grid
 
     def draw_tiles(self):
         """
-            Draws the tiles.
+            Draws the tiles on the game grid.
         """
         self.tiles = []
         for row, x in enumerate(self.tiles_grid):
@@ -81,7 +83,7 @@ class Game:
 
     def draw_element(self):
         """
-            Draws the ui elements.
+            Draws the UI elements.
         """
         for button in self.button_list:
             button.draw(self.screen)
@@ -110,9 +112,7 @@ class Game:
         self.tiles_grid = self.create_game()
         self.tiles_grid_completed = self.create_game()
         self.elapsed_time = 0
-        self.bfs=False
-        self.dfs=False
-        self.astar=False
+        self.agent_activated = False
         self.start_timer = False
         self.start_game = False
         self.draw_tiles()
@@ -135,6 +135,8 @@ class Game:
         """
         self.elapsed_time = 0
         possible_moves = []
+
+        # Get all possible moves
         for row, tiles in enumerate(self.tiles):
             for col, tile in enumerate(tiles):
                 if tile.text == "empty":
@@ -150,6 +152,7 @@ class Game:
             if len(possible_moves) > 0:
                 break
 
+        # Removes the previously made move
         if self.prev_choice == "right":
             possible_moves.remove("left") if "left" in possible_moves else None
         elif self.prev_choice == "left":
@@ -159,9 +162,11 @@ class Game:
         elif self.prev_choice == "down":
             possible_moves.remove("up") if "up" in possible_moves else None
 
+        # Selects a random move
         choice = random.choice(possible_moves)
         self.prev_choice = choice
 
+        # Moves the tile
         if choice == "right":
             self.tiles_grid[row][col], self.tiles_grid[row][col + 1] = self.tiles_grid[row][col + 1], self.tiles_grid[row][col]
         elif choice == "left":
@@ -172,27 +177,30 @@ class Game:
             self.tiles_grid[row][col], self.tiles_grid[row + 1][col] = self.tiles_grid[row + 1][col], self.tiles_grid[row][col]
 
     def solve(self):
+        """
+            Solves the game.
+        """
         if len(self.moves) > 0:
             move = self.moves.pop(0)
             self.tiles_grid = move
-
-    def print_info(self,agent):                      
-        print("Generated Node Count: " + str(agent.generated_node))
-        print("Expanded Node Count: " + str(agent.expanded_node))
-        print("Maximum Node Count: " + str(agent.maximum_node_in_memory))
-        print("Total Move: " + str(agent.total_move))
 
     def events(self):
         """
             Game loop - events.
         """
+
+        # Process input (events)
         for event in pygame.event.get():
+            # Checks for closing window
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit(0)
 
+            # Checks for mouse click and gets mouse position
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
+
+                # Switches clicked tile with the empty tile if not shuffling
                 for row, tiles in enumerate(self.tiles):
                     for col, tile in enumerate(tiles):
                         if tile.click(mouse_pos) and not self.start_shuffle:
@@ -211,6 +219,7 @@ class Game:
                             
                             self.draw_tiles()
 
+                # Checks for button click
                 for button in self.button_list:
                     if button.click(mouse_pos):
                         if button.text == "Shuffle":
@@ -218,38 +227,34 @@ class Game:
                             self.start_shuffle = True
                         if button.text == "Reset":
                             self.new()
-                        if button.text == "1":
-                            self.image = "images/dog.jpg"
+                        if button.text == "1" or button.text == "2" or button.text == "3":
+                            if button.text == "1":
+                                self.image = "images/dog.jpg"
+                            elif button.text == "2":
+                                self.image = "images/cat.jpg"
+                            elif button.text == "3":
+                                self.image = "images/cub.jpg"
                             self.new()
-                        if button.text == "2":
-                            self.image = "images/cat.jpg"
-                            self.new()
-                        if button.text == "3":
-                            self.image = "images/cub.jpg"
-                            self.new()
-                        if button.text == "BFS":
-                            self.bfs = True
-                            agent = BFSAgent(self.tiles_grid)
+                        if button.text == "BFS" or button.text == "DFS" or button.text == "A*":
+                            if button.text == "BFS":
+                                agent = BFSAgent(self.tiles_grid)
+                            elif button.text == "DFS":
+                                agent = DFSAgent(self.tiles_grid)
+                            elif button.text == "A*":
+                                agent = AStarAgent(self.tiles_grid)
+                            self.agent_activated = True
                             self.moves = agent.solve()
-                            self.print_info(agent)
-                        if button.text == "DFS":
-                            self.dfs = True
-                            agent = DFSAgent(self.tiles_grid)
-                            self.moves = agent.solve()
-                            self.print_info(agent)
-                        if button.text == "A*":
-                            self.astar = True
-                            agent = AStarAgent(self.tiles_grid)
-                            self.moves = agent.solve()
-                            self.print_info(agent)
+                            agent.print_info()
 
     def update(self):
         """
             Game loop - update.
         """
+        # Checks if the game is over
         if self.start_game:
-            if self.tiles_grid.all() == self.tiles_grid_completed.all():
+            if self.tiles_grid == self.tiles_grid_completed:
                 self.start_game = False
+                # Saves the high score
                 if self.high_score > 0:
                     if self.elapsed_time < self.high_score:
                         self.high_score = self.elapsed_time
@@ -259,12 +264,14 @@ class Game:
                     self.high_score = self.elapsed_time
                 self.save_score()
 
+            #Starts the game timer
             if self.start_timer:
                 self.timer = time.time()
                 self.start_timer = False
-            
+
             self.elapsed_time = time.time() - self.timer
 
+        # Shuffles the tiles if button is pressed
         if self.start_shuffle:
             self.shuffle()
             self.draw_tiles()
@@ -274,16 +281,16 @@ class Game:
                 self.start_game = True
                 self.start_timer = True
 
-        if self.astar or self.bfs or self.dfs:
+        # Solves the game if agent buttons is pressed
+        if self.agent_activated:
             self.solve()
             self.draw_tiles()
 
-        # print(self.elapsed_time)
         self.all_sprites.update()
 
     def run(self):
         """
-            Game loop.
+            Starts the game loop.
         """ 
         self.playing = True
         while self.playing:

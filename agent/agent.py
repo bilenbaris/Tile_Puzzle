@@ -5,10 +5,10 @@ class Agent:
     
     def __init__(self, matrix):
         """
-            Initialize the agent.
+            Initializes the agent class.
 
             Args:
-                matrix (list): The initial game matrix
+                matrix (list): Initial game matrix
         """
         # The initial game matrix
         self.initial_matrix = [list(row) for row in matrix]
@@ -41,13 +41,13 @@ class Agent:
     
     def find_tile_position(self, matrix, tile):
         """
-            Returns the position of the empty tile in the current game matrix.
+            Returns the position of the empty tile on the current game matrix.
 
             Args:
-                matrix (array): The current game matrix
+                matrix (array): Current game matrix
 
             Returns:
-                tuple (int, int): The position of the empty tile
+                tuple (int, int): Position of the empty tile
         """
         for i in range(self.game_size):
             for j in range(self.game_size):
@@ -56,11 +56,11 @@ class Agent:
     
     def checkEqual(self, matrix1, matrix2):
         """
-            Check if two matrices are equal.
+            Checks if two matrices are equal.
 
             Args:
-                matrix1 (array): The first matrix
-                matrix2 (array): The second matrix
+                matrix1 (array): First matrix to be compared
+                matrix2 (array): Second matrix to be compared
 
             Returns:
                 bool: True if the matrices are equal, False otherwise
@@ -73,10 +73,10 @@ class Agent:
     
     def get_moves(self, Node):
         """
-            Returns a list of matrices that represent the solution.
+            Returns a list of matrices that represents the solution.
 
             Args:
-                Node (Node): The node to follow the solution path
+                Node (Node): Node that will initialize the solution path
             
             Returns:
                 list: A list of game matrices
@@ -87,19 +87,34 @@ class Agent:
             Node = Node.parent
             self.total_move += 1
         return road[::-1]
+
+    def print_info(self):    
+        """
+            Prints the information about the agent.
+
+            Args:
+                agent (Agent): Agent that is used to solve the game.
+        """      
+        print("---"*15)            
+        print("Generated Node Count: " + str(self.generated_node))
+        print("Expanded Node Count: " + str(self.expanded_node))
+        print("Maximum Node Count: " + str(self.maximum_node_in_memory))
+        print("Total Move: " + str(self.total_move))
+        print("---"*15) 
+
                     
 class Node():
     
     def __init__(self, parent, position, matrix, g_score = 0, h_score = 0):
         """
-            Initialize the node.
+            Initializes the node class.
 
             Args:
-                parent (Node): The parent node
-                position (tuple): The position of the empty tile
-                matrix (array): The game matrix
-                g_score (int): The g score of the node
-                h_score (int): The h score of the node
+                parent (Node): Parent node
+                position (tuple): Position of the empty tile
+                matrix (array): Game matrix
+                g_score (int): G score of the node
+                h_score (int): H score of the node
         """
         self.parent = parent
         self.position = position
@@ -111,10 +126,10 @@ class Node():
 
     def __lt__(self, other):
         """
-            Compare the g and h scores of two nodes.
+            Compares the g and h scores of two nodes.
 
             Args:
-                other (Node): The other node to compare
+                other (Node): Other node to compare
         """
         return self.g_score > other.g_score or self.h_score > other.h_score
     
@@ -122,13 +137,13 @@ class PriorityQueue:
 
     def __init__(self):
         """
-            Initialize the priority queue.
+            Initializes the priority queue class.
         """
         self.elements = []
 
     def isEmpty(self):
         """
-            Check if the priority queue is empty.
+            Checks if the priority queue is empty.
 
             Returns:
                 bool: True if the priority queue is empty, False otherwise
@@ -137,20 +152,20 @@ class PriorityQueue:
 
     def push(self, item, priority):
         """
-            Push an item into the priority queue.
+            Pushes an item into the priority queue.
 
             Args:
-                item (Node): The item to push
-                priority (int): The priority of the item
+                item (Node): Item to be pushed into the priority queue
+                priority (int): Priority of the item
         """
         heapq.heappush(self.elements, (priority, item))
 
     def pop(self):
         """
-            Pop an item from the priority queue.
+            Pops an item from the priority queue.
 
             Returns:
-                Node: The item with the highest priority
+                Node: Item with the highest priority
         """
         return heapq.heappop(self.elements)[1]
 
@@ -159,16 +174,16 @@ class PriorityQueue:
             Returns the size of the priority queue.
 
             Returns:
-                int: The size of the priority queue
+                int: Size of the priority queue
         """
         return len(self.elements)
     
     def contains(self, matrix):
         """
-            Check if the priority queue contains the given matrix.
+            Checks if the priority queue contains the given matrix.
 
             Args:
-                matrix (array): The matrix to check
+                matrix (array): Matrix to be checked
 
             Returns:   
                 bool: True if the priority queue contains the matrix, False otherwise

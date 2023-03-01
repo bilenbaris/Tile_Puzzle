@@ -4,11 +4,12 @@ from agent.agent import *
 class BFSAgent(Agent):
     def __init__(self, matrix):
         """
-            Initialize the BFS agent.
+            Initializes the BFS agent class.
 
             Args:
-                matrix (array): The initial game matrix
+                matrix (array): Initial game matrix
         """
+        # Initializing the parent class
         super().__init__(matrix)
     
     def solve(self):
@@ -56,8 +57,12 @@ class BFSAgent(Agent):
 class DFSAgent(Agent):
     def __init__(self, matrix):
         """
-            Initialize the DFS agent.
+            Initializes the DFS agent class.
+
+            Args:
+                matrix (array): Initial game matrix
         """
+        # Initializing the parent class
         super().__init__(matrix)
 
     
@@ -109,22 +114,23 @@ class AStarAgent(Agent):
     
     def __init__(self, matrix):
         """
-            Initialize the A* agent.
+            Initializes the A* agent class.
 
             Args:
-                matrix (array): The initial game matrix
+                matrix (array): Initial game matrix
         """
+        # Initializing the parent class
         super().__init__(matrix)
     
     def heuristic(self, matrix):
         """
-            Calculate the heuristic value of the game matrix.
+            Calculates the heuristic value of the game matrix.
 
             Args:
-                matrix (array): The current game matrix
+                matrix (array): Current game matrix
             
             Returns:
-                int: The heuristic value of the game matrix
+                int: Heuristic value of the game matrix
         """
         h = 0
         for i in range(self.game_size):

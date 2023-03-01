@@ -2,14 +2,23 @@ import pygame
 from src.settings import *
 
 """
-    ####################################
+#############################################
     DO NOT CHANGE ANYTHING IN THIS FILE.
-    ####################################
+#############################################
 """
 
 class Text:
 
     def __init__(self, x, y, text, text_size):
+        """
+            Initializes the text object class.
+
+            Args:
+                x (int): X coordinate of the text
+                y (int): Y coordinate of the text
+                text (str): Text to be displayed
+                text_size (int): Size of the text      
+        """
         pygame.font.init()
         self.x, self.y = x, y
         self.text = text
@@ -18,6 +27,9 @@ class Text:
     def draw(self, screen):
         """
             Draws the text on the screen.
+
+            Args:
+                screen (pygame.Surface): Screen to draw the text on
         """
         font = pygame.font.SysFont("Arial", self.text_size)
         text = font.render(self.text, True, WHITE)
@@ -26,6 +38,20 @@ class Text:
 class Button:
     
     def __init__(self, x, y, width, height, text, text_size, background_color, text_color, radius = 0):
+        """
+            Initializes the button object class.
+
+            Args:
+                x (int): X coordinate of the button
+                y (int): Y coordinate of the button
+                width (int): Width of the button
+                height (int): Height of the button
+                text (str): Text to be displayed on the button
+                text_size (int): Size of the text on the button
+                background_color (tuple): Background color of the button
+                text_color (tuple): Color of the text on the button
+                radius (int): Radius of the button (default: 0)
+        """
         pygame.font.init()
         self.x, self.y = x, y
         self.width, self.height = width, height
@@ -38,6 +64,9 @@ class Button:
     def draw(self, screen):
         """
             Draws the button on the screen.
+
+            Args:
+                screen (pygame.Surface): Screen to draw the button on
         """
         pygame.draw.rect(screen, self.background_color, (self.x, self.y, self.width, self.height), border_radius = self.radius)
         self.font = pygame.font.SysFont("Arial", self.text_size)
@@ -50,6 +79,11 @@ class Button:
     def click(self, mouse_pos):
         """
             Checks if the button is clicked or not.
-            return: bool
+            
+            Args:
+                mouse_pos (tuple): Mouse position
+
+            Returns:
+                bool: True if the button is clicked, False otherwise
         """
         return (self.x <= mouse_pos[0] <= self.x + self.width) and (self.y <= mouse_pos[1] <= self.y + self.height)

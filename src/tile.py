@@ -2,14 +2,24 @@ import pygame
 from src.settings import *
 
 """
-    ####################################
+#############################################
     DO NOT CHANGE ANYTHING IN THIS FILE.
-    ####################################
+#############################################
 """
 
 class Tile(pygame.sprite.Sprite):
     
     def __init__(self, game, x, y, text, background_image):
+        """
+            Initializes the tile object class.
+
+            Args:
+                game (Game): Game object
+                x (int): X coordinate of the tile
+                y (int): Y coordinate of the tile
+                text (str): Text to be displayed on the tile
+                background_image (str): Path to the background image
+        """
         pygame.font.init()
         self.groups = game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -37,34 +47,47 @@ class Tile(pygame.sprite.Sprite):
     def click(self, mouse_pos):
         """
             Checks if the tile is clicked or not.
-            return: bool
+            
+            Args:
+                mouse_pos (tuple): Mouse position
+            
+            Returns:
+                bool: True if the tile is clicked, False otherwise
         """
         return (self.rect.left <= mouse_pos[0] <= self.rect.right) and (self.rect.top <= mouse_pos[1] <= self.rect.bottom)
 
     def right(self):
         """
             Checks if the tile's right side is empty or not.
-            return: bool
+            
+            Returns:
+                bool: True if the tile's right side is empty, False otherwise
         """
         return self.rect.x + TILESIZE < GAMESIZE * TILESIZE + START[0]
 
     def left(self):
         """
             Checks if the tile's left side is empty or not.
-            return: bool
+            
+            Returns:
+                bool: True if the tile's left side is empty, False otherwise
         """
         return self.rect.x - TILESIZE >= 0 + START[0]
 
     def up(self):
         """
             Checks if the tile's up side is empty or not.
-            return: bool
+            
+            Returns:
+                bool: True if the tile's up side is empty, False otherwise
         """
         return self.rect.y - TILESIZE >= 0 + START[1]
 
     def down(self):
         """
             Checks if the tile's down side is empty or not.
-            return: bool
+            
+            Returns:
+                bool: True if the tile's down side is empty, False otherwise
         """
         return self.rect.y + TILESIZE < GAMESIZE * TILESIZE + START[1]
