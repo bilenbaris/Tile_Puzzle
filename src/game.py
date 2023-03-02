@@ -9,7 +9,6 @@ from src.elements import *
 from agent.agent import *
 from agent.agents import *
 
-
 class Game:
     
     def __init__(self):
@@ -21,6 +20,7 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.shuffle_time = 0
+        self.shuffle_move = SHUFFLE
         self.start_shuffle = False
         self.agent_activated = False
         self.prev_choice = ""
@@ -128,6 +128,10 @@ class Game:
         self.button_list.append(Button(850, 460, 50, 50, "BFS", 25, WHITE, BLACK,10))
         self.button_list.append(Button(850, 515, 50, 50, "DFS", 25, WHITE, BLACK,10))
         self.button_list.append(Button(850, 570, 50, 50, "A*", 25, WHITE, BLACK,10))
+
+        self.button_list.append(Button(75, 550, 130, 40, "Shuffle: 5", 25, WHITE, BLACK,10))
+        self.button_list.append(Button(75, 600, 130, 40, "Shuffle: 10", 25, WHITE, BLACK,10))
+        self.button_list.append(Button(75, 650, 130, 40, "Shuffle: 15", 25, WHITE, BLACK,10))
 
     def shuffle(self):
         """
@@ -245,6 +249,17 @@ class Game:
                             self.agent_activated = True
                             self.moves = agent.solve()
                             agent.print_info()
+                        if button.text == "Shuffle: 5" or button.text == "Shuffle: 10" or button.text == "Shuffle: 15":
+                            if button.text == "Shuffle: 5":
+                                self.shuffle_move = 5
+                            elif button.text == "Shuffle: 10":
+                                self.shuffle_move = 10
+                            elif button.text == "Shuffle: 15":
+                                self.shuffle_move = 15
+                            self.shuffle_time = 0
+                            self.start_shuffle = True
+
+                            
 
     def update(self):
         """
@@ -276,7 +291,7 @@ class Game:
             self.shuffle()
             self.draw_tiles()
             self.shuffle_time += 1
-            if self.shuffle_time > SHUFFLE:
+            if self.shuffle_time > self.shuffle_move:
                 self.start_shuffle = False
                 self.start_game = True
                 self.start_timer = True
